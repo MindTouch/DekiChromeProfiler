@@ -90,25 +90,31 @@ $(document).ready(function() {
                                     if(!miss && !hit && !ratio && !reset) {
                                         str = _(request.cols[col]).strRightBack('=') || '';
                                     } else {
-                                        if(!miss && hit && ratio) {
-                                            miss = hit / ratio - hit;
-                                        } else if(!ratio && miss && hit) {
-                                            ratio = hit / (hit + miss);
-                                        }
-                                        if(hit) {
-                                            str += hit || '0';
-                                        }
-                                        if(miss) {
-                                            str += ' / ' + miss;
-                                        }
                                         if(ratio) {
-                                            if(ratio > 0.99) {
-                                                tdClass = ' class="good"';
-                                            } else if(ratio < 0.5) {
-                                                tdClass = ' class="bad"';
+                                            if(!miss && hit) {
+                                                miss = hit / ratio - hit; 
+                                            } else if(!hit && miss) {
+                                                hit = (-ratio * miss) / (ratio - 1); 
                                             }
-                                            str += ' <br /><span' + tdClass +'>(' + _(ratio * 100).numberFormat(1) + '%)</span>';
+                                        } else {
+                                            if(hit && miss) {
+                                                ratio = hit / (hit + miss);
+                                            } else if(!hit && miss) {
+                                                hit = 0;
+                                                ratio = 0.0;
+                                            } else if(hit && !miss) {
+                                                miss = 0;
+                                                ratio = 1.0;
+                                            }
                                         }
+                                        str += hit || '0';
+                                        str += ' / ' + miss;
+                                        if(ratio > 0.99) {
+                                            tdClass = ' class="good"';
+                                        } else if(ratio < 0.5) {
+                                            tdClass = ' class="bad"';
+                                        }
+                                        str += ' <br /><span' + tdClass +'>(' + _(ratio * 100).numberFormat(1) + '%)</span>';
                                         if(reset) {
                                             tdClassReset = ' reset'
                                             str += '<br />reset: ' + reset;
