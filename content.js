@@ -94,6 +94,8 @@ $(document).ready(function() {
                                             miss = hit / ratio - hit;
                                         } else if(!ratio && miss && hit) {
                                             ratio = hit / (hit + miss);
+                                        } else if(!hit && miss && ratio) {
+                                            hit = (-ratio * miss) / (ratio - 1);
                                         }
                                         if(hit) {
                                             str += hit || '0';
