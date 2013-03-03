@@ -78,7 +78,10 @@ $(document).ready(function() {
 
                                     // If this is the page call, display a explain link
                                     if(url.match(/\/@api\/deki\/pages\/[\d]+$/)) {
-                                        content += '<a target="_blank" href="' + href + request.urlPath.replace('?', '/contents/explain?') + '">' + '<img src="info.png"></a>';
+                                        var explainUrl = href + request.urlPath
+                                            .replace('?', '/contents/explain?')
+                                            .replace('&include=contents', '');
+                                        content += '<a target="_blank" href="' + explainUrl + '">' + '<img src="info.png"></a>';
                                     }
                                     content += '</div></td>';
                                 _(uniqueCols).each(function(col, idx) {
