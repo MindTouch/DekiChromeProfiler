@@ -72,9 +72,18 @@ $(document).ready(function() {
                             _.each(result.stats.requests, function(request) {
                                 content += '<tr>' +
                                     '<td class="col1">' + request.verb + '</td>' +
-                                    '<td class="col2">' + request.time + '</td>' +
-                                    '<td class="col3"><div class="stat-col"><a target="_blank" href="' + href + request.urlPath + '">' + _(request.urlPath).strLeft('?') + '</a></div>';
-                                    content += '</td>';
+                                    '<td class="col2">' + request.time + '</td>';
+                                    var url = _(request.urlPath).strLeft('?');
+                                    content += '<td class="col3"><div class="stat-col"><a target="_blank" href="' + href + request.urlPath + '">' + url + '</a>';
+
+                                    // If this is the page call, display a explain link
+                                    if(url.match(/\/@api\/deki\/pages\/[\d]+$/)) {
+                                        var explainUrl = href + request.urlPath
+                                            .replace('?', '/contents/explain?')
+                                            .replace('&include=contents', '');
+                                        content += '<a target="_blank" href="' + explainUrl + '">' + '<img src="info.png"></a>';
+                                    }
+                                    content += '</div></td>';
                                 _(uniqueCols).each(function(col, idx) {
                                     var statMap = { };
                                     _(request.cols[col]).chain().words(',').each(function(stat) {

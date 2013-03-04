@@ -77,7 +77,6 @@ table tr:last-child td:last-child {
 }
 .stat-col {
 	float: left;
-	width: 20%;
 }
 td.col2 {
 	font-weight: bold;
