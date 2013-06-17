@@ -77,7 +77,7 @@ $(document).ready(function() {
                                     content += '<td class="col3"><div class="stat-col"><a target="_blank" href="' + href + request.urlPath + '">' + url + '</a>';
 
                                     // If this is the page call, display a explain link
-                                    if(url.match(/\/@api\/deki\/pages\/[\d]+$/)) {
+                                    if(url.match(/\/@api\/deki\/pages\//)) {
                                         var explainUrl = href + request.urlPath
                                             .replace('?', '/contents/explain?')
                                             .replace('&include=contents', '');
