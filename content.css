@@ -12,9 +12,10 @@ h1 {
 h2 {
     font-size: 1.4em;
 }
-#mt-stats-total {
+#mt-stats-elapsed, #mt-stats-total {
 	font-size: 1.2em;
 }
+#mt-stats-elapsed span,
 #mt-stats-total span {
     color: #2166b0;
     font-weight: bold;

@@ -42,6 +42,7 @@ $(document).ready(function() {
                     $('#mt-error').hide();
                     $('#mt-stats-table').find('tr').remove();
                     $('#mt-stats-total').find('*').remove();
+		    $('#mt-stats-elapsed').find('*').remove();
                     var content = '';
                     _(result.stats.requests).each(function(req, idx) {
                         req.cols = _(req.stats).chain().words(/[;]/).groupBy(function(stat) {
@@ -137,6 +138,7 @@ $(document).ready(function() {
                         }
                     );
                     $('#mt-stats-total').append('<span>' + result.stats.total + '</span>');
+		    $('#mt-stats-elapsed').append('<span>' + result.stats.elapsed + '</span>');
                 }
             });
     };
