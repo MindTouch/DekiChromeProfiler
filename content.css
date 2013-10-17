@@ -12,15 +12,7 @@ h1 {
 h2 {
     font-size: 1.4em;
 }
-#mt-stats-elapsed, #mt-stats-total {
-	font-size: 1.2em;
-}
-#mt-stats-elapsed span,
-#mt-stats-total span {
-    color: #2166b0;
-    font-weight: bold;
-}
-#mt-error, #mt-api-stats {
+#mt-error, #mt-stats {
     display: none;
 }
 table {
@@ -29,8 +21,8 @@ table {
 	border-radius: 10px;
 	color: #333;
 	font-size: 1.2em;
-	table-layout: fixed;
-	width: 100%;
+    table-layout: fixed;
+    width: 100%
 }
 tr:nth-child(odd) {
     background-color: #f8f8f8;	
@@ -51,7 +43,9 @@ td {
     padding: 5px;
     text-align: center;
     vertical-align: top;
-    width: 5%;	
+}
+#mt-api-stats-table td {
+    width: 5%;
 }
 table tr:first-child td:first-child {
     border-top-left-radius: 10px;
@@ -65,22 +59,30 @@ table tr:last-child td:first-child {
 table tr:last-child td:last-child {
     border-bottom-right-radius: 10px;
 }
-.col1 {
+#mt-api-stats-table .col1 {
 	text-align: left;
 	width: 4%;
 }
-.col3 {
+#mt-api-stats-table .col3 {
     text-align: left;
     width: 20%;
 }
-.col8 {
+#mt-api-stats-table .col8 {
 	width: 8%;
+}
+#mt-cache-stats-table .col1 {
+	text-align: left;
+	width: 11.5%;
+}
+#mt-cache-stats-table .col2,
+#mt-cache-stats-table .col4 {
+    width: 15%;
+}
+#mt-cache-stats-table .col3 {
+    text-align: left;
 }
 .stat-col {
 	float: left;
-}
-td.col2 {
-	font-weight: bold;
 }
 td span {
 	color: #666;
@@ -95,4 +97,18 @@ td span {
     background: #fed8da;
     color: red;
     font-weight: bold;
+}
+.clear {
+    clear: both;
+}
+#mt-stats {
+    width: 100%;
+}
+.mt-totals-table-container {
+    margin-right: 1%
+}
+.mt-totals-table-container,
+.mt-cache-stats-table-container {
+    float: left;
+    width: 49.5%;
 }
