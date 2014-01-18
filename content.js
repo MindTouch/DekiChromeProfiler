@@ -21,6 +21,25 @@
 
 _.mixin(_.string.exports());
 
+
+var MainCtrl = function($scope, $route, $routeParams, $location) {};
+var PhpStatsCtrl = function($scope, $routeParams) {};
+var ApiStatsCtrl = function($scope, $routeParams) {};
+
+angular.module('dekiChromeProfiler', ['ngRoute'])
+    .config(function($routeProvider, $locationProvider) {
+        $routeProvider.when('/phpstats', {
+            templateUrl: 'phpstats.html',
+            controller: PhpStatsCtrl
+        })..when('/apistats', {
+            templateUrl: 'apistats.html',
+            controller: ApiStatsCtrl
+        })otherwise({
+            redirectTo: '/phpstats'
+        });
+    });
+
+/*
 $(document).ready(function() {
     var statsKey = null;
     var reload = function() {
@@ -191,3 +210,4 @@ $(document).ready(function() {
     };
     setInterval(reload, 500);
 });
+*/
