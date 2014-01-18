@@ -21,20 +21,78 @@
 
 _.mixin(_.string.exports());
 
+//--- Controllers ---
+var PhpStatsCtrl = function($scope, $routeParams) {
+    var cache = null;
+    $scope.getApiLinkHtml = function(baseHref, path) {
+        var url = _(path).strLeft('?');
+        return {
+            display: url,
+            explain: (url.match(/\/@api\/deki\/pages\//) && url.match(/\//g).length === 4)
+                ? baseHref + path.replace('?', '/contents/explain?').replace('&include=contents', '') 
+                : null
+        };
+    };
+    $scope.data =  {
+        error: 'Waiting for statistics'
+    };
+    var reload = function() {
+        chrome.devtools.inspectedWindow.eval(
+            "JSON.stringify({stats: Deki.Stats, base: Deki.BaseHref})",
+            function(result, isException) {
+                $scope.$apply(function() {
 
-var MainCtrl = function($scope, $route, $routeParams, $location) {};
-var PhpStatsCtrl = function($scope, $routeParams) {};
+                    // Handle error, likely this is due to not being on a MT site
+                    if(isException || !result) {
+                        $scope.data.error = 'Waiting for statistics';
+                        statsKey = null;
+                    } else {
+
+                        // Only update if data changed
+                        $scope.data.error = null;
+                        var hash = btoa(result);
+                        if(cache === hash) {
+                            return;
+                        }
+                        cache = hash;
+                        result = JSON.parse(result);
+                        $scope.data.result = result.stats;
+                        $scope.data.baseHref = result.base;
+
+                        // api stats
+                        _(result.stats.stats.requests.api).each(function(req, idx) {
+                            req.cols = _(req.stats).chain().words(/[;]/).groupBy(function(stat) {
+                                return _(stat).strLeftBack('-').trim();
+                            }).value();
+                        });
+                        var uniqueCols = ['request-time', 'mysql-time', 'mysql'];
+                        _(result.stats.stats.requests.api).chain().pluck('cols').each(function(col) {
+                            _(col).chain().keys().each(function(key) {
+                                uniqueCols.push(key);
+                            }).value();
+                        }).value();
+                        $scope.data.uniqueApiCols = _(uniqueCols).chain().map(function(c) {
+                            return c === 'mysql' ? 'mysql (queries)' : c;
+                        }).uniq().value();
+
+                    }
+                });
+            });
+    };
+    setInterval(reload, 500);
+};
 var ApiStatsCtrl = function($scope, $routeParams) {};
 
+//--- Angular setup ---
 angular.module('dekiChromeProfiler', ['ngRoute'])
     .config(function($routeProvider, $locationProvider) {
         $routeProvider.when('/phpstats', {
             templateUrl: 'phpstats.html',
             controller: PhpStatsCtrl
-        })..when('/apistats', {
+        }).when('/apistats', {
             templateUrl: 'apistats.html',
             controller: ApiStatsCtrl
-        })otherwise({
+        }).otherwise({
             redirectTo: '/phpstats'
         });
     });
@@ -47,64 +105,8 @@ $(document).ready(function() {
             "Deki.Stats",
             function(result, isException) {
                 if(isException || !result) {
-                    $('#mt-stats').hide();
-                    $('#mt-error').find('*').remove();
-                    $('#mt-error').append('<h2 id="mt-chrome-ext-error">Waiting for statistics</h2>');
-                    $('#mt-error').show();
-                    statsKey = null;
+                    
                 } else {
-                    if(statsKey === btoa(result)) {
-                        return;
-                    }
-                    statsKey = btoa(result);
-                    $('#mt-stats').show();
-                    $('#mt-error').hide();
-                    $('#mt-totals-table').find('tr').remove();
-                    $('#mt-api-stats-table').find('tr').remove();
-                    $('#mt-cache-stats-table').find('tr').remove();
-
-                    // totals
-                    var content = '<tr>' +
-                        '<th>App Cache</th>' +
-                        '<th>API</th>' +
-                        '<th>Other</th>' +
-                        '<th>Total</th>' +
-                    '</tr>';
-                     content += '<tr>' +
-                        '<td>' + result.stats.totals.cache + '</td>' +
-                        '<td>' + result.stats.totals.api + '</td>' +
-                        '<td>' + result.stats.totals.other + '</td>' +
-                        '<td>' + result.stats.totals.elapsed + '</td>' +
-                    '</tr>';
-                    $('#mt-totals-table').append(content);
-                    chrome.devtools.inspectedWindow.eval(
-                        "Deki.BaseHref",
-                        function(href, isException) {
-
-                            // api stats
-                            _(result.stats.requests.api).each(function(req, idx) {
-                                req.cols = _(req.stats).chain().words(/[;]/).groupBy(function(stat) {
-                                    return _(stat).strLeftBack('-').trim();
-                                }).value();
-                            });
-                            var uniqueCols = ['request-time', 'mysql-time', 'mysql'];
-                            _(result.stats.requests.api).chain().pluck('cols').each(function(col) {
-                                _(col).chain().keys().each(function(key) {
-                                    uniqueCols.push(key);
-                                }).value();
-                            }).value();
-                            uniqueCols = _(uniqueCols).uniq();
-                            content = '<tr>' +
-                                '<th class="col1">Verb</th>' +
-                                '<th class="col2">Time</th>' +
-                                '<th class="col3">URL</th>';
-                            _(uniqueCols).each(function(col, idx) {
-                                if(col === 'mysql') {
-                                    col = 'mysql (queries)'
-                                }
-                                content += '<th class="col' + (idx + 4) + '">' + col + '</th>';
-                            });
-                            content += '</tr>';
                             _.each(result.stats.requests.api, function(request) {
                                 content += '<tr>' +
                                     '<td class="col1">' + request.verb + '</td>' +
@@ -161,52 +163,11 @@ $(document).ready(function() {
                             });
                             $('#mt-api-stats-table').append(content);
 
-                            // cache stats
-                            content =
-                                '<tr>' +
-                                '<th class="col1">Verb</th>' +
-                                '<th class="col2">Time</th>' +
-                                '<th class="col3">URL</th>' +
-                                '<th class="col4">Result</th>' +
-                                '</tr>';
-                            _.each(result.stats.requests.cache, function(request) {
-                                var status = '';
-                                var statusClass = '';
-                                if(request.hit === 1){
-                                    status = 'HIT';
-                                    statusClass = 'good';
-                                } else {
-                                    status = 'MISS';
-                                    statusClass = 'bad';
-                                }
-                                content += '<tr>' +
-                                    '<td class="col1">' + request.verb + '</td>' +
-                                    '<td class="col2">' + request.time + '</td>' +
-                                    '<td class="col3">' + getApiLinkHtml(href, request.path) + '</td>' +
-                                    '<td class="col4 ' + statusClass +'">' + status + '</td>' +
-                                '</tr>';
-                            });
-                            $('#mt-cache-stats-table').append(content);
+                        
                         }
                     );
                 }
             });
-    };
-    var getApiLinkHtml = function(baseHref, path) {
-        var url = _(path).strLeft('?');
-        var content =
-            '<div class="stat-col">' +
-            '<a target="_blank" href="' + baseHref + path + '">' + url + '</a>';
-
-        // If this is the page call, display a explain link
-        if(url.match(/\/@api\/deki\/pages\//) && url.match(/\//g).length === 4) {
-            var explainUrl = baseHref + path
-                .replace('?', '/contents/explain?')
-                .replace('&include=contents', '');
-            content += '<a target="_blank" href="' + explainUrl + '">' + '<img src="info.png"></a>';
-        }
-        content += '</div>';
-        return content;
     };
     setInterval(reload, 500);
 });

@@ -1,15 +1,57 @@
 <h1>Page Render Statistics</h1>
-<div id="mt-error"></div>
-<div id="mt-stats">
+<div id="mt-error" ng-show="data.error != null">
+    <h2 id="mt-chrome-ext-error">{{error}}</h2>
+</div>
+<div id="mt-stats" ng-show="data.result != null">
     <div class="mt-totals-table-container">
         <h2>Totals</h2>
-        <table id="mt-totals-table"></table>
+        <table id="mt-totals-table">
+            <tr>
+                <th>App Cache</th>
+                <th>API</th>
+                <th>Other</th>
+                <th>Total</th>
+            </tr>
+            <tr>
+                <td>{{data['result']['stats']['totals']['cache']}}</td>
+                <td>{{data['result']['stats']['totals']['api']}}</td>
+                <td>{{data['result']['stats']['totals']['other']}}</td>
+                <td>{{data['result']['stats']['totals']['elapsed']}}</td>
+            </tr>
+        </table>
     </div>
     <div class="mt-cache-stats-table-container">
         <h2>App Cache Requests</h2>
-        <table id="mt-cache-stats-table"></table>
+        <table id="mt-cache-stats-table">
+            <tr>
+                <th class="col1">Verb</th>
+                <th class="col2">Time</th>
+                <th class="col3">URL</th>
+                <th class="col4">Result</th>
+            </tr>
+            <tr ng-repeat="request in data['result']['stats']['requests']['cache']">
+                <td class="col1">{{request['verb']}}</td>
+                <td class="col2">{{request['time']}}</td>
+                <td class="col3">
+                    <div class="stat-col">
+                        <a target="_blank" href="{{ data.baseHref + request['path'] }}">{{ getApiLinkHtml(data.baseHref, request['path'])['display'] }}</a>
+                        <a ng-show="getApiLinkHtml(data.baseHref, request['path'])['explain'] !== null" target="_blank" href="{{ getApiLinkHtml(data.baseHref, request['path'])['explain'] }}">
+                            <img src="info.png"></img>
+                        </a>
+                    </div>
+                </td>
+                <td class="col4" ng-class="request['hit'] === 1 ? 'good' : 'bad'"> {{ request['hit'] === 1 ? 'HIT' : 'MISS' }} </td>
+            </tr>
+        </table>
     </div>
     <br class="clear" />
     <h2>API Requests</h2>
-    <table id="mt-api-stats-table"></table>
+    <table id="mt-api-stats-table">
+        <tr>
+            <th class="col1">Verb</th>
+            <th class="col2">Time</th>
+            <th class="col3">URL</th>
+            <th ng-repeat="col in data.uniqueApiCols" ng-class="col + $index">{{col}}</th>
+        </tr>
+    </table>
 </div>
