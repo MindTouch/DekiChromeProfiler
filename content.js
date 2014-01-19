@@ -61,9 +61,9 @@ var PhpStatsCtrl = function($scope, $routeParams) {
                         // Cache totals
                         $scope.data.appCacheTotals = {
                             cache: result.stats.stats.totals.cache,
-                            api: result.stats.stats.totals.cache,
-                            other: result.stats.stats.totals.cache,
-                            elapsed: result.stats.stats.totals.cache
+                            api: result.stats.stats.totals.api,
+                            other: result.stats.stats.totals.other,
+                            elapsed: result.stats.stats.totals.elapsed
                         };
 
                         // Cache stats
