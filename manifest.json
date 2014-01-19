@@ -3,5 +3,13 @@
   "name": "MindTouch Developer Extension",
   "description": "This extension provides mindtouch development information",
   "version": "1.0",
-  "devtools_page": "devtools.html"
+  "devtools_page": "devtools.html",
+  "background": {
+  	"scripts": ["background.js"],
+  	"persistent": false
+  },
+  "permissions": [
+  	"http://*/",
+  	"https://*/"
+  ]
 }

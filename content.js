@@ -30,7 +30,7 @@ var PhpStatsCtrl = function($scope, $routeParams) {
             href: baseHref + path,
             display: url,
             explain: (url.match(/\/@api\/deki\/pages\//) && url.match(/\//g).length === 4)
-                ? baseHref + path.replace('?', '/contents/explain?')
+                ? '/content.html#/apistats?uri=' + encodeURIComponent(baseHref + path.replace('?', '/contents/explain?'))
                 : null
         };
     };
@@ -160,11 +160,36 @@ var PhpStatsCtrl = function($scope, $routeParams) {
     };
     setInterval(reload, 500);
 };
-var ApiStatsCtrl = function($scope, $routeParams) {};
+var ApiStatsCtrl = function($scope, $routeParams, $http) {
+    $scope.data = { 
+        error: 'Fetching API statistics ...'
+    };
+    proxyXHR({ 
+        method: 'GET',
+        url: $routeParams.uri + '&dream.out.format=json', 
+        onComplete: function(status, data) {
+            $scope.$apply(function() {
+                if(status !== 200) {
+                    $scope.data.error = 'Failed to fetch API stats';
+                } else {
+                    data = JSON.parse(data);
+                    $scope.data.error = null;
+                    $scope.data.totals = {
+                        elapsed: data['@elapsed'],
+                        siteid: data['@id'],
+                        path: data['@path']
+                    };
+                    console.log(data);
+                }
+            });
+        }
+    });
+};
 
 //--- Angular setup ---
 angular.module('dekiChromeProfiler', ['ngRoute'])
-    .config(function($routeProvider, $locationProvider) {
+    .config(function($routeProvider, $locationProvider, $compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
         $routeProvider.when('/phpstats', {
             templateUrl: 'phpstats.html',
             controller: PhpStatsCtrl

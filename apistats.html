@@ -1,0 +1,20 @@
+<h1>API Statistics</h1>
+<div class="back">
+	<a href="content.html#/phpstats">Back</a>
+</div>
+<div id="mt-error" ng-show="data.error != null">
+    <h2 id="mt-chrome-ext-error">{{data.error}}</h2>
+</div>
+<div id="mt-stats" ng-show="data.error === null">
+    <table id="mt-explain-stats-table">
+        <tr>
+        	<th class="col1">Elapsed</th>
+        	<th class="col2">Page path</th>
+            <th class="col3">Site</th>
+        </tr>
+        <tr>
+        	<td class="col1">{{ data['totals']['elapsed'] }}</td>
+        	<td class="col2">{{ data['totals']['path'] }}</td>
+        	<td class="col3">{{ data['totals']['siteid'] }}</td>
+        </tr>
+</div>
