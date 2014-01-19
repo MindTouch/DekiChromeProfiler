@@ -24,12 +24,13 @@ _.mixin(_.string.exports());
 //--- Controllers ---
 var PhpStatsCtrl = function($scope, $routeParams) {
     var cache = null;
-    $scope.getApiLinkHtml = function(baseHref, path) {
+    var getApiLink = function(baseHref, path) {
         var url = _(path).strLeft('?');
         return {
+            href: baseHref + path,
             display: url,
             explain: (url.match(/\/@api\/deki\/pages\//) && url.match(/\//g).length === 4)
-                ? baseHref + path.replace('?', '/contents/explain?').replace('&include=contents', '') 
+                ? baseHref + path.replace('?', '/contents/explain?')
                 : null
         };
     };
@@ -56,10 +57,26 @@ var PhpStatsCtrl = function($scope, $routeParams) {
                         }
                         cache = hash;
                         result = JSON.parse(result);
-                        $scope.data.result = result.stats;
-                        $scope.data.baseHref = result.base;
 
-                        // api stats
+                        // Cache totals
+                        $scope.data.appCacheTotals = {
+                            cache: result.stats.stats.totals.cache,
+                            api: result.stats.stats.totals.cache,
+                            other: result.stats.stats.totals.cache,
+                            elapsed: result.stats.stats.totals.cache
+                        };
+
+                        // Cache stats
+                        $scope.data.cachingResults = _(result.stats.stats.requests.cache).map(function(r) {
+                            return {
+                                verb: r.verb,
+                                time: r.time,
+                                hit: r.hit,
+                                link: getApiLink(result.base, r.path)
+                            }
+                        });
+
+                        // API stats columns
                         _(result.stats.stats.requests.api).each(function(req, idx) {
                             req.cols = _(req.stats).chain().words(/[;]/).groupBy(function(stat) {
                                 return _(stat).strLeftBack('-').trim();
@@ -75,6 +92,68 @@ var PhpStatsCtrl = function($scope, $routeParams) {
                             return c === 'mysql' ? 'mysql (queries)' : c;
                         }).uniq().value();
 
+                        // API stats values
+                        $scope.data.apiRequests = _(result.stats.stats.requests.api).map(function(r) {
+                            return {
+                                verb: r.verb,
+                                time: r.time,
+                                link: getApiLink(result.base, r.path),
+                                remainingCols: _($scope.data.uniqueApiCols).map(function(col) {
+                                    var statMap = { };
+                                    var str = '';
+                                    var tdClassReset = '';
+                                    var tdClass = '';
+                                    var resetText = '';
+                                    _(r.cols[col]).chain().words(',').each(function(stat) {
+                                        statMap[_(stat).chain().strLeft('=').strRightBack('-').value()] = _(stat).strRight('=');
+                                    });
+                                    var hit = _(statMap['hit']).toNumber(3) || null;
+                                    var miss = _(statMap['miss']).toNumber(3) || null;
+                                    var ratio = _(statMap['ratio']).toNumber(3) || null;
+                                    var reset = _(statMap['reset']).toNumber(3) || null;
+                                    if(!miss && !hit && !ratio && !reset) {
+                                        str = _(r.cols[col]).strRightBack('=') || '';
+                                    } else {
+                                        if(ratio) {
+                                            if(!miss && hit) {
+                                                miss = hit / ratio - hit; 
+                                            } else if(!hit && miss) {
+                                                hit = (-ratio * miss) / (ratio - 1); 
+                                            }
+                                        } else {
+                                            if(hit && miss) {
+                                                ratio = hit / (hit + miss);
+                                            } else if(!hit && miss) {
+                                                hit = 0;
+                                                ratio = 0.0;
+                                            } else if(hit && !miss) {
+                                                miss = 0;
+                                                ratio = 1.0;
+                                            }
+                                        }
+                                        var tdClass='';
+                                        str += hit || '0';
+                                        str += ' / ' + miss;
+                                        if(ratio > 0.99) {
+                                            tdClass = 'good';
+                                        } else if(ratio < 0.5) {
+                                            tdClass = 'bad';
+                                        }
+                                        if(reset) {
+                                            tdClassReset = ' reset'
+                                            resetText = 'reset: ' + reset;
+                                        }
+                                    }
+                                    return { 
+                                        display: str, 
+                                        formattedRatio: _(ratio * 100).numberFormat(1) || '', 
+                                        ratioClass: tdClass, 
+                                        resetClass: tdClassReset,
+                                        resetText: resetText
+                                    };
+                                })
+                            };
+                        });
                     }
                 });
             });
@@ -96,79 +175,3 @@ angular.module('dekiChromeProfiler', ['ngRoute'])
             redirectTo: '/phpstats'
         });
     });
-
-/*
-$(document).ready(function() {
-    var statsKey = null;
-    var reload = function() {
-        chrome.devtools.inspectedWindow.eval(
-            "Deki.Stats",
-            function(result, isException) {
-                if(isException || !result) {
-                    
-                } else {
-                            _.each(result.stats.requests.api, function(request) {
-                                content += '<tr>' +
-                                    '<td class="col1">' + request.verb + '</td>' +
-                                    '<td class="col2">' + request.time + '</td>' +
-                                    '<td class="col3">' + getApiLinkHtml(href, request.path) + '</td>';
-                                _(uniqueCols).each(function(col, idx) {
-                                    var statMap = { };
-                                    _(request.cols[col]).chain().words(',').each(function(stat) {
-                                        statMap[_(stat).chain().strLeft('=').strRightBack('-').value()] = _(stat).strRight('=');
-                                    });
-                                    var hit = _(statMap['hit']).toNumber(3) || null;
-                                    var miss = _(statMap['miss']).toNumber(3) || null;
-                                    var ratio = _(statMap['ratio']).toNumber(3) || null;
-                                    var reset = _(statMap['reset']).toNumber(3) || null;
-                                    var str = '';
-                                    var tdClass = '';
-                                    var tdClassReset = '';
-                                    if(!miss && !hit && !ratio && !reset) {
-                                        str = _(request.cols[col]).strRightBack('=') || '';
-                                    } else {
-                                        if(ratio) {
-                                            if(!miss && hit) {
-                                                miss = hit / ratio - hit; 
-                                            } else if(!hit && miss) {
-                                                hit = (-ratio * miss) / (ratio - 1); 
-                                            }
-                                        } else {
-                                            if(hit && miss) {
-                                                ratio = hit / (hit + miss);
-                                            } else if(!hit && miss) {
-                                                hit = 0;
-                                                ratio = 0.0;
-                                            } else if(hit && !miss) {
-                                                miss = 0;
-                                                ratio = 1.0;
-                                            }
-                                        }
-                                        str += hit || '0';
-                                        str += ' / ' + miss;
-                                        if(ratio > 0.99) {
-                                            tdClass = ' class="good"';
-                                        } else if(ratio < 0.5) {
-                                            tdClass = ' class="bad"';
-                                        }
-                                        str += ' <br /><span' + tdClass +'>(' + _(ratio * 100).numberFormat(1) + '%)</span>';
-                                        if(reset) {
-                                            tdClassReset = ' reset'
-                                            str += '<br />reset: ' + reset;
-                                        } 
-                                    }
-                                    content += '<td class="col' + (idx + 4) + tdClassReset + '">' + str + '</td>';
-                                });
-                                content += '</tr>';
-                            });
-                            $('#mt-api-stats-table').append(content);
-
-                        
-                        }
-                    );
-                }
-            });
-    };
-    setInterval(reload, 500);
-});
-*/

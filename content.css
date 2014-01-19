@@ -61,6 +61,7 @@ table tr:last-child td:last-child {
 	width: 4%;
 }
 #mt-api-stats-table .col3 {
+    overflow: hidden;
     text-align: left;
     width: 20%;
 }

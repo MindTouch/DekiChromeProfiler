@@ -1,8 +1,8 @@
 <h1>Page Render Statistics</h1>
 <div id="mt-error" ng-show="data.error != null">
-    <h2 id="mt-chrome-ext-error">{{error}}</h2>
+    <h2 id="mt-chrome-ext-error">{{data.error}}</h2>
 </div>
-<div id="mt-stats" ng-show="data.result != null">
+<div id="mt-stats" ng-show="data.error === null">
     <div class="mt-totals-table-container">
         <h2>Totals</h2>
         <table id="mt-totals-table">
@@ -13,10 +13,10 @@
                 <th>Total</th>
             </tr>
             <tr>
-                <td>{{data['result']['stats']['totals']['cache']}}</td>
-                <td>{{data['result']['stats']['totals']['api']}}</td>
-                <td>{{data['result']['stats']['totals']['other']}}</td>
-                <td>{{data['result']['stats']['totals']['elapsed']}}</td>
+                <td>{{data['appCacheTotals']['cache']}}</td>
+                <td>{{data['appCacheTotals']['api']}}</td>
+                <td>{{data['appCacheTotals']['other']}}</td>
+                <td>{{data['appCacheTotals']['elapsed']}}</td>
             </tr>
         </table>
     </div>
@@ -29,13 +29,13 @@
                 <th class="col3">URL</th>
                 <th class="col4">Result</th>
             </tr>
-            <tr ng-repeat="request in data['result']['stats']['requests']['cache']">
+            <tr ng-repeat="request in data['cachingResults']">
                 <td class="col1">{{request['verb']}}</td>
                 <td class="col2">{{request['time']}}</td>
                 <td class="col3">
                     <div class="stat-col">
-                        <a target="_blank" href="{{ data.baseHref + request['path'] }}">{{ getApiLinkHtml(data.baseHref, request['path'])['display'] }}</a>
-                        <a ng-show="getApiLinkHtml(data.baseHref, request['path'])['explain'] !== null" target="_blank" href="{{ getApiLinkHtml(data.baseHref, request['path'])['explain'] }}">
+                        <a target="_blank" href="{{ request['link']['href'] }}">{{ request['link']['display'] }}</a>
+                        <a ng-show="request['link']['explain'] !== null" target="_blank" href="{{ request['link']['explain'] }}">
                             <img src="info.png"></img>
                         </a>
                     </div>
@@ -51,7 +51,25 @@
             <th class="col1">Verb</th>
             <th class="col2">Time</th>
             <th class="col3">URL</th>
-            <th ng-repeat="col in data.uniqueApiCols" ng-class="col + $index">{{col}}</th>
+            <th ng-repeat="col in data.uniqueApiCols" ng-class="'col' + ($index + 4)">{{col}}</th>
+        </tr>
+        <tr ng-repeat="request in data['apiRequests']">
+            <td class="col1">{{ request['verb'] }}</td>
+            <td class="col2">{{ request['time'] }}</td>
+            <td class="col3">
+                <div class="stat-col">
+                    <a target="_blank" href="{{ request['link']['href'] }}">{{ request['link']['display'] }}</a>
+                    <a ng-show="request['link']['explain'] !== null" target="_blank" href="{{ request['link']['explain'] }}">
+                        <img src="info.png"></img>
+                    </a>
+                </div>
+            </td>
+            <td ng-repeat="r in request['remainingCols']" ng-class="'col' + ($index + 4) + r['tdClassReset']">{{ r['display'] }}
+                <br />
+                <span ng-class="r['ratioClass']"> {{ r['formattedRatio'] }}% </span>
+                <br />
+                {{ r['resetText'] }}
+            </td>
         </tr>
     </table>
 </div>
