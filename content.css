@@ -12,9 +12,6 @@ h1 {
 h2 {
     font-size: 1.4em;
 }
-#mt-error, #mt-stats {
-    display: none;
-}
 table {
 	border: 1px solid #999;
 	border-collapse: collapse;
@@ -64,6 +61,7 @@ table tr:last-child td:last-child {
 	width: 4%;
 }
 #mt-api-stats-table .col3 {
+    overflow: hidden;
     text-align: left;
     width: 20%;
 }
