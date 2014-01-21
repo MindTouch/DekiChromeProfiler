@@ -217,6 +217,7 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
                                 functions: p['function']
                             };
                         }).sortBy(function(x) { return -x.elapsed; }).value();
+                        console.log($scope.data.pages);
                     }
                 });
             }
@@ -228,6 +229,10 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
 //--- Helper Functions ---
 //TODO: move to service
 var makeArray = function(val) {
+    console.log(val);
+    if(!val) {
+        return [];
+    }
     return _(val).isArray() ? val : [val];
 };
 

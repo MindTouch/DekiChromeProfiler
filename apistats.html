@@ -5,7 +5,7 @@
     <a href="" ng-click="showFunctions(null, null)">API Stats for {{data.pageTitle}} </a>
     <a ng-show="data['functionsData']['path'] !== null"> > {{ data['functionsData']['path'] }} </a>
     <span> | </span>
-    <a target="_blank" href="{{ data.uri }}">View in browser</a>
+    <a target="_blank" href="{{ data['uri'] }}">View in browser</a>
     <a href="" ng-click="refresh()">Refresh</a>
 </div>
 <div id="mt-error" ng-show="data.error != null">
