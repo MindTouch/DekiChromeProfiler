@@ -159,11 +159,28 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
         return val <= good ? 'good' : (val >= bad ? 'bad' : 'avg');
     };
     $scope.data = { 
-        pageTitle: 'Unknown page'
+        pageTitle: 'Unknown page',
+        functionsData: {
+            path: null,
+            functions: null
+        }
     };
     $scope.$on('data', function(event, result) {
         $scope.data.pageTitle = result.pageTitle;
     });
+    $scope.showFunctions = function(path, functions) {
+        $scope.data.functionsData = {
+            functions: functions ? _(makeArray(functions)).chain().map(function(f) {
+                return {
+                    name: f['@name'],
+                    elapsed: f['@elapsed'],
+                    count: f['@count'],
+                    location: f['@location']
+                };
+            }).sortBy(function(x) { return -(x.elapsed * x.count) }).value() : null,
+            path: path || null
+        };
+    };
     $scope.refresh = function(uri) {
         $scope.data.uri = uri;
         $scope.data.error = 'Loading ...';
@@ -190,11 +207,12 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
                                 max: d['@max'],
                                 count: d['@count']
                             };
-                        }).sortBy(function(x) { return -x.elapsed; }).value();
+                        }).sortBy(function(x) { return -(x.elapsed * x.count); }).value();
                         $scope.data.pages = _(makeArray(data['rendered-content'].page)).chain().map(function(p) {
                             return {
                                 path: p['@path'],
-                                elapsed: p['@elapsed']
+                                elapsed: p['@elapsed'],
+                                functions: p['function']
                             };
                         }).sortBy(function(x) { return -x.elapsed; }).value();
                     }
