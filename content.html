@@ -2,7 +2,9 @@
     <link rel="stylesheet" type="text/css" href="content.css" />
 </head>
 <body ng-app="dekiChromeProfiler">
-    <div ng-view></div>
+	<div ng-controller="MainCtrl">
+    	<div ng-view></div>
+	</div>
 </body>
 <script src="redist/underscore-min.js"></script>
 <script src="redist/underscore.string.min.js"></script>

@@ -1,6 +1,9 @@
 <h1>API Statistics</h1>
 <div class="back">
-	<a href="content.html#/phpstats">Back</a>
+	<a href="content.html#/phpstats">Home</a>
+    <span> > API Stats for {{data.pageTitle}} | </span>
+    <a target="_blank" href="{{ data.uri }}">View in browser</a>
+    <a href="" ng-click="refresh()">Refresh</a>
 </div>
 <div id="mt-error" ng-show="data.error != null">
     <h2 id="mt-chrome-ext-error">{{data.error}}</h2>
@@ -13,8 +16,45 @@
             <th class="col3">Site</th>
         </tr>
         <tr>
-        	<td class="col1">{{ data['totals']['elapsed'] }}</td>
+        	<td class="col1" ng-class="rate(data['totals']['elapsed'], 0.3, 1.5)" >{{ data['totals']['elapsed'] }}</td>
         	<td class="col2">{{ data['totals']['path'] }}</td>
         	<td class="col3">{{ data['totals']['siteid'] }}</td>
         </tr>
+    </table>
+    <div ng-show="data['db'].length > 0">
+        <br class="clear" />
+        <h3>DB Functions</h3>
+        <table id="mt-explain-db-table">
+            <tr>
+                <th class="col1">DB Function</th>
+                <th class="col2">Elapsed</th>
+                <th class="col3">Average</th>
+                <th class="col4">Max</th>
+                <th class="col5">Count</th>
+            </tr>
+            <tr ng-repeat="db in data['db']">
+                <td class="col1">
+                    <a target="_blank" href="{{ 'http://cb.mindtouch.com/#!/db/functions/' + db['name'] }}">{{ db['name'] }}</a>
+                </td>
+                <td class="col2" ng-class="rate(db['elapsed'], 0.2, 1)">{{ db['elapsed'] }}</td>
+                <td class="col3" ng-class="rate(db['average'], 0.2, 1)">{{ db['average'] }}</td>
+                <td class="col4" ng-class="rate(db['max'], 0.4, 1)">{{ db['max'] }}</td>
+                <td class="col5" ng-class="rate(db['count'], 5, 10)">{{ db['count'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <div ng-show="data['pages'].length > 0">
+        <br class="clear" />
+        <h3>Pages</h3>
+        <table id="mt-explain-pages-table">
+            <tr>
+                <th class="col1">Path</th>
+                <th class="col2">Elapsed</th>
+            </tr>
+            <tr ng-repeat="page in data['pages']">
+                <td class="col1">{{ page['path'] }}</td>
+                <td class="col2" ng-class="rate(page['elapsed'], 0.2, 1)">{{ page['elapsed'] }}</td>
+            </tr>
+        </table>
+    </div>
 </div>
