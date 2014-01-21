@@ -160,6 +160,7 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
     };
     $scope.data = { 
         pageTitle: 'Unknown page',
+        baseHref: null,
         functionsData: {
             path: null,
             functions: null
@@ -167,6 +168,7 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
     };
     $scope.$on('data', function(event, result) {
         $scope.data.pageTitle = result.pageTitle;
+        $scope.data.baseHref = result.base;
     });
     $scope.showFunctions = function(path, functions) {
         $scope.data.functionsData = {

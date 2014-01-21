@@ -1,7 +1,10 @@
 <h1>API Statistics</h1>
 <div class="back">
 	<a href="content.html#/phpstats">Home</a>
-    <span> > API Stats for {{data.pageTitle}} | </span>
+    <span> > </span>
+    <a href="" ng-click="showFunctions(null, null)">API Stats for {{data.pageTitle}} </a>
+    <a ng-show="data['functionsData']['path'] !== null"> > {{ data['functionsData']['path'] }} </a>
+    <span> | </span>
     <a target="_blank" href="{{ data.uri }}">View in browser</a>
     <a href="" ng-click="refresh()">Refresh</a>
 </div>
@@ -9,7 +12,7 @@
     <h2 id="mt-chrome-ext-error">{{data.error}}</h2>
 </div>
 <div id="mt-stats" ng-show="data.error === null">
-    <table id="mt-explain-stats-table">
+    <table id="mt-explain-stats-table" ng-show="data['functionsData']['path'] === null">
         <tr>
         	<th class="col1">Elapsed</th>
         	<th class="col2">Page path</th>
@@ -21,7 +24,47 @@
         	<td class="col3">{{ data['totals']['siteid'] }}</td>
         </tr>
     </table>
-    <div ng-show="data['db'].length > 0">
+    <div ng-show="data['pages'].length > 0 && data['functionsData']['path'] === null">
+        <br class="clear" />
+        <h3>Pages</h3>
+        <table id="mt-explain-pages-table">
+            <tr>
+                <th class="col1">Path</th>
+                <th class="col2">Elapsed</th>
+                <th class="col3">Functions</th>
+            </tr>
+            <tr ng-repeat="page in data['pages']">
+                <td class="col1"><a href="{{data['baseHref'] + '/' + page['path']}}" target="_blank">{{ page['path'] }}</a></td>
+                <td class="col2" ng-class="rate(page['elapsed'], 0.2, 1)">{{ page['elapsed'] }}</td>
+                <td class="col3"><a href="" ng-click="showFunctions(page['path'], page['functions'])">See functions</a></td>
+            </tr>
+        </table>
+    </div>
+    <div ng-show="data['functionsData']['path'] !== null">
+        <br class="clear" />
+        <h3>Functions for {{ data['functionsData']['path'] }}</h3>
+        <table id="mt-explain-functions-table">
+            <tr>
+                <th class="col1">Function name</th>
+                <th class="col2">Elapsed</th>
+                <th class="col3">Count</th>
+                <th class="col4">Location</th>
+            </tr>
+            <tr ng-repeat="f in data['functionsData']['functions']">
+                <td class="col1">
+                    <a target="_blank" href="{{ 'http://cb.mindtouch.com/#!/ds/functions/' + f['name'] }}">{{ f['name'] }}</a>
+                </td>
+                <td class="col2" ng-class="rate(f['elapsed'], 0.1, 0.5)">{{ f['elapsed'] }}</td>
+                <td class="col3" ng-class="rate(f['count'], 5, 10)">{{ f['count'] }}</td>
+                <td class="col4" >
+                    <a target="_blank" href="{{data['baseHref'] + '/' + data['functionsData']['path']}}">
+                        {{ f['location'] }}
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div ng-show="data['db'].length > 0 && data['functionsData']['path'] === null">
         <br class="clear" />
         <h3>DB Functions</h3>
         <table id="mt-explain-db-table">
@@ -40,43 +83,6 @@
                 <td class="col3" ng-class="rate(db['average'], 0.2, 1)">{{ db['average'] }}</td>
                 <td class="col4" ng-class="rate(db['max'], 0.4, 1)">{{ db['max'] }}</td>
                 <td class="col5" ng-class="rate(db['count'], 5, 10)">{{ db['count'] }}</td>
-            </tr>
-        </table>
-    </div>
-    <div ng-show="data['pages'].length > 0 && data['functionsData']['path'] === null">
-        <br class="clear" />
-        <h3>Pages</h3>
-        <table id="mt-explain-pages-table">
-            <tr>
-                <th class="col1">Path</th>
-                <th class="col2">Elapsed</th>
-            </tr>
-            <tr ng-repeat="page in data['pages']">
-                <td class="col1"><a href="" ng-click="showFunctions(page['path'], page['functions'])">{{ page['path'] }}</a></td>
-                <td class="col2" ng-class="rate(page['elapsed'], 0.2, 1)">{{ page['elapsed'] }}</td>
-            </tr>
-        </table>
-    </div>
-    <div ng-show="data['functionsData']['path'] !== null">
-        <br class="clear" />
-        <div class="back">
-            <a href="" ng-click="showFunctions(null, null)">Back</a>
-        </div>
-        <h3>Functions for {{ data['functionsData']['path'] }}</h3>
-        <table id="mt-explain-functions-table">
-            <tr>
-                <th class="col1">Function name</th>
-                <th class="col2">Elapsed</th>
-                <th class="col3">Count</th>
-                <th class="col4">Location</th>
-            </tr>
-            <tr ng-repeat="f in data['functionsData']['functions']">
-                <td class="col1">
-                    <a target="_blank" href="{{ 'http://cb.mindtouch.com/#!/ds/functions/' + f['name'] }}">{{ f['name'] }}</a>
-                </td>
-                <td class="col2" ng-class="rate(f['elapsed'], 0.1, 0.5)">{{ f['elapsed'] }}</td>
-                <td class="col3" ng-class="rate(f['count'], 5, 10)">{{ f['count'] }}</td>
-                <td class="col4" >{{ f['location'] }}</td>
             </tr>
         </table>
     </div>
