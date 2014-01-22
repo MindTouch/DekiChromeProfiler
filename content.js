@@ -179,7 +179,7 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
                     count: f['@count'],
                     location: f['@location']
                 };
-            }).sortBy(function(x) { return -(x.elapsed * x.count) }).value() : null,
+            }).sortBy(function(x) { return -x.elapsed; }).value() : null,
             path: path || null
         };
     };
@@ -209,7 +209,7 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
                                 max: d['@max'],
                                 count: d['@count']
                             };
-                        }).sortBy(function(x) { return -(x.elapsed * x.count); }).value();
+                        }).sortBy(function(x) { return -x.elapsed; }).value();
                         $scope.data.pages = _(makeArray(data['rendered-content'].page)).chain().map(function(p) {
                             return {
                                 path: p['@path'],
@@ -217,7 +217,6 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
                                 functions: p['function']
                             };
                         }).sortBy(function(x) { return -x.elapsed; }).value();
-                        console.log($scope.data.pages);
                     }
                 });
             }
@@ -229,7 +228,6 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
 //--- Helper Functions ---
 //TODO: move to service
 var makeArray = function(val) {
-    console.log(val);
     if(!val) {
         return [];
     }

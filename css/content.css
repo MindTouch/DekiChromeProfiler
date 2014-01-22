@@ -1,37 +1,39 @@
 body {
-	font-family: tahoma, helvetica, sans-serif;
-	font-size: 10px;
+    font-family: tahoma, helvetica, sans-serif;
+    font-size: 10px;
+    margin-left: 1em;
+    margin-right: 1em;
 }
 a {
-	color: #2166b0;
+    color: #2166b0;
 }
 h1 {
-	color: #333;
-	font-size: 1.8em;
+    color: #333;
+    font-size: 1.8em;
 }
 h2 {
     font-size: 1.4em;
 }
 table {
-	border: 1px solid #999;
-	border-collapse: collapse;
-	border-radius: 10px;
-	color: #333;
-	font-size: 1.2em;
+    border: 1px solid #999;
+    border-collapse: collapse;
+    border-radius: 10px;
+    color: #333;
+    font-size: 1.2em;
     table-layout: fixed;
     width: 100%
 }
 tr:nth-child(odd) {
-    background-color: #f8f8f8;	
+    background-color: #f8f8f8;  
 }
 th {
-	background: #ddd;
-	border-right: 1px solid #999;
-	border-bottom: 1px solid #999;
-	color: #444;
-	padding: 5px;
-	text-align: center;
-	vertical-align: top;
+    background: #ddd;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    color: #444;
+    padding: 5px;
+    text-align: center;
+    vertical-align: top;
 }
 td {
     border-right: 1px solid #bbb;
@@ -57,8 +59,8 @@ table tr:last-child td:last-child {
     border-bottom-right-radius: 10px;
 }
 #mt-api-stats-table .col1 {
-	text-align: left;
-	width: 4%;
+    text-align: left;
+    width: 4%;
 }
 #mt-api-stats-table .col3 {
     overflow: hidden;
@@ -66,11 +68,11 @@ table tr:last-child td:last-child {
     width: 20%;
 }
 #mt-api-stats-table .col8 {
-	width: 8%;
+    width: 8%;
 }
 #mt-cache-stats-table .col1 {
-	text-align: left;
-	width: 11.5%;
+    text-align: left;
+    width: 11.5%;
 }
 #mt-cache-stats-table .col2,
 #mt-cache-stats-table .col4 {
@@ -80,10 +82,10 @@ table tr:last-child td:last-child {
     text-align: left;
 }
 .stat-col {
-	float: left;
+    float: left;
 }
 td span {
-	color: #666;
+    color: #666;
 }
 .good {
     color: #23b801;
@@ -99,7 +101,7 @@ td span {
 .clear {
     clear: both;
 }
-#mt-stats {
+#mt-stats, #mt-stats-api {
     width: 100%;
 }
 .mt-totals-table-container {
@@ -110,6 +112,10 @@ td span {
     float: left;
     width: 49.5%;
 }
-.back {
-    margin-bottom: 2em;
+
+/* API Stats */
+#mt-stats-api .col1 {
+    overflow: hidden;
+    text-align: left;
+    width: 30%;
 }

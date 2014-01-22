@@ -1,32 +1,52 @@
 <h1>API Statistics</h1>
-<div class="back">
-	<a href="content.html#/phpstats">Home</a>
-    <span> > </span>
-    <a href="" ng-click="showFunctions(null, null)">API Stats for {{data.pageTitle}} </a>
-    <a ng-show="data['functionsData']['path'] !== null"> > {{ data['functionsData']['path'] }} </a>
-    <span> | </span>
-    <a target="_blank" href="{{ data['uri'] }}">View in browser</a>
-    <a href="" ng-click="refresh()">Refresh</a>
-</div>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb">
+            <li>
+                <a class="navbar-link" href="content.html#/phpstats">Home</a>
+            </li>
+            <li>
+                <a class="navbar-link" href="" ng-click="showFunctions(null, null)">API stats for {{data.pageTitle}} </a>
+            </li>
+            <li ng-show="data['functionsData']['path'] !== null">
+                <a class="navbar-link"> {{ data['functionsData']['path'] }} </a>
+            </li>
+        </ol>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a target="_blank" href="{{ data['uri'] }}">
+                    <span class="glyphicon glyphicon-export"></span> View in browser
+                </a>
+            </li>
+            <li>
+                <a href="" ng-click="refresh(data['uri'])" type="button">
+                    <span class="glyphicon glyphicon-refresh"></span> Refresh
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
 <div id="mt-error" ng-show="data.error != null">
     <h2 id="mt-chrome-ext-error">{{data.error}}</h2>
 </div>
-<div id="mt-stats" ng-show="data.error === null">
+<div id="mt-stats-api" ng-show="data.error === null">
     <table id="mt-explain-stats-table" ng-show="data['functionsData']['path'] === null">
         <tr>
-        	<th class="col1">Elapsed</th>
-        	<th class="col2">Page path</th>
+            <th class="col1">Page path</th>
+        	<th class="col2">Elapsed</th>
             <th class="col3">Site</th>
         </tr>
         <tr>
-        	<td class="col1" ng-class="rate(data['totals']['elapsed'], 0.3, 1.5)" >{{ data['totals']['elapsed'] }}</td>
-        	<td class="col2">{{ data['totals']['path'] }}</td>
+            <td class="col1">{{ data['totals']['path'] }}</td>
+        	<td class="col2" ng-class="rate(data['totals']['elapsed'], 0.3, 1.5)" >{{ data['totals']['elapsed'] }}</td>
         	<td class="col3">{{ data['totals']['siteid'] }}</td>
         </tr>
     </table>
     <div ng-show="data['pages'].length > 0 && data['functionsData']['path'] === null">
         <br class="clear" />
-        <h3>Pages</h3>
+        <h2>Pages</h2>
         <table id="mt-explain-pages-table">
             <tr>
                 <th class="col1">Path</th>
@@ -41,8 +61,7 @@
         </table>
     </div>
     <div ng-show="data['functionsData']['path'] !== null">
-        <br class="clear" />
-        <h3>Functions for {{ data['functionsData']['path'] }}</h3>
+        <h2>Functions for {{ data['functionsData']['path'] }}</h2>
         <table id="mt-explain-functions-table">
             <tr>
                 <th class="col1">Function name</th>
@@ -66,10 +85,10 @@
     </div>
     <div ng-show="data['db'].length > 0 && data['functionsData']['path'] === null">
         <br class="clear" />
-        <h3>DB Functions</h3>
+        <h2>Database Functions</h2>
         <table id="mt-explain-db-table">
             <tr>
-                <th class="col1">DB Function</th>
+                <th class="col1">Database function</th>
                 <th class="col2">Elapsed</th>
                 <th class="col3">Average</th>
                 <th class="col4">Max</th>
