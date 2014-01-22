@@ -35,8 +35,10 @@
                 <td class="col3">
                     <div class="stat-col">
                         <a target="_blank" href="{{ request['link']['href'] }}">{{ request['link']['display'] }}</a>
-                        <a ng-show="request['link']['explain'] !== null" target="_blank" href="{{ request['link']['explain'] }}">
-                            <img src="info.png"></img>
+                        <a ng-show="request['link']['explain'] !== null" href="{{request['link']['explain']}}">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <span class="glyphicon glyphicon-info-sign"></span> Explain
+                            </button>
                         </a>
                     </div>
                 </td>
@@ -59,8 +61,10 @@
             <td class="col3">
                 <div class="stat-col">
                     <a target="_blank" href="{{ request['link']['href'] }}">{{ request['link']['display'] }}</a>
-                    <a ng-show="request['link']['explain'] !== null" target="_blank" href="{{ request['link']['explain'] }}">
-                        <img src="info.png"></img>
+                    <a ng-show="request['link']['explain'] !== null" href="{{request['link']['explain']}}">
+                        <button type="button" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-info-sign"></span> Explain
+                        </button>
                     </a>
                 </div>
             </td>
