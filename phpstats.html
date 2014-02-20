@@ -57,7 +57,7 @@
         </tr>
         <tr ng-repeat="request in data['apiRequests']">
             <td class="col1">{{ request['verb'] }}</td>
-            <td class="col2">{{ request['time'] }}</td>
+            <td  mt-rate="0.3|0.7" mt-value="{{ request['time'] }}" class="col2"></td>
             <td class="col3">
                 <div class="stat-col">
                     <a target="_blank" href="{{ request['link']['href'] }}">{{ request['link']['display'] }}</a>

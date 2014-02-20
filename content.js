@@ -21,8 +21,32 @@
 
 _.mixin(_.string.exports());
 
+//--- Helper Functions ---
+//TODO: move to service
+var makeArray = function(val) {
+    if(!val) {
+        return [];
+    }
+    return _(val).isArray() ? val : [val];
+};
+
+//--- Angular setup ---
+var app = angular.module('dekiChromeProfiler', ['ngRoute'])
+    .config(function($routeProvider, $locationProvider, $compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+        $routeProvider.when('/phpstats', {
+            templateUrl: 'phpstats.html',
+            controller: 'PhpStatsCtrl'
+        }).when('/apistats', {
+            templateUrl: 'apistats.html',
+            controller: 'ApiStatsCtrl'
+        }).otherwise({
+            redirectTo: '/phpstats'
+        });
+    });
+
 //--- Controllers ---
-var MainCtrl = function($scope) {
+app.controller('MainCtrl', ['$scope', function($scope) {
     var reload = function() {
         chrome.devtools.inspectedWindow.eval(
             "JSON.stringify({stats: Deki.Stats, base: Deki.BaseHref, pageTitle: Deki.PageTitle})",
@@ -37,9 +61,9 @@ var MainCtrl = function($scope) {
             });
     };
     setInterval(reload, 500);
-};
+}]);
 
-var PhpStatsCtrl = function($scope, $routeParams) {
+app.controller('PhpStatsCtrl', ['$scope', function($scope, $routeParams) {
     var getApiLink = function(baseHref, path) {
         var url = _(path).strLeft('?');
         return {
@@ -153,11 +177,9 @@ var PhpStatsCtrl = function($scope, $routeParams) {
             };
         });
     });
-};
-var ApiStatsCtrl = function($scope, $routeParams, $http) {
-    $scope.rate = function(val, good, bad) {
-        return val <= good ? 'good' : (val >= bad ? 'bad' : 'avg');
-    };
+}]);
+
+app.controller('ApiStatsCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
     $scope.data = { 
         pageTitle: 'Unknown page',
         baseHref: null,
@@ -223,29 +245,25 @@ var ApiStatsCtrl = function($scope, $routeParams, $http) {
         });
     };
     $scope.refresh($routeParams.uri);
-};
+}]);
 
-//--- Helper Functions ---
-//TODO: move to service
-var makeArray = function(val) {
-    if(!val) {
-        return [];
-    }
-    return _(val).isArray() ? val : [val];
-};
-
-//--- Angular setup ---
-angular.module('dekiChromeProfiler', ['ngRoute'])
-    .config(function($routeProvider, $locationProvider, $compileProvider) {
-        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
-        $routeProvider.when('/phpstats', {
-            templateUrl: 'phpstats.html',
-            controller: PhpStatsCtrl
-        }).when('/apistats', {
-            templateUrl: 'apistats.html',
-            controller: ApiStatsCtrl
-        }).otherwise({
-            redirectTo: '/phpstats'
-        });
-    });
-
+// --- Directives ---
+app.directive('mtRate', function() {
+    var rate = function(val, good, bad) {
+        return val <= good ? 'good' : (val >= bad ? 'bad' : 'avg');
+    };
+    return {
+        link: function(scope, element, attrs) {
+            attrs.$observe('mtValue', function(val) {
+                var thresholds = _(attrs.mtRate)
+                .chain()
+                .words('|')
+                .map(function(w) {
+                    return parseFloat(w);
+                }).value();
+                element.addClass(rate(val, thresholds[0], thresholds[1]));
+                element.html(val);
+            });
+        }
+    };
+});
