@@ -1,8 +1,10 @@
 {
   "manifest_version": 2,
   "name": "MindTouch Developer Extension",
-  "description": "This extension provides mindtouch development information",
-  "version": "1.0",
+  "short_name": "DekiChromeExtension",
+  "description": "This extension provides performance information about a MindTouch site",
+  "version": "1.1",
+  "author": "Yuri Gorokhov",
   "devtools_page": "devtools.html",
   "background": {
   	"scripts": ["background.js"],
@@ -11,5 +13,10 @@
   "permissions": [
   	"http://*/",
   	"https://*/"
-  ]
+  ],
+  "icons": {
+    "16": "MindTouch_16.png",
+    "48": "MindTouch_48.png",
+    "128": "MindTouch_128.png"
+  }
 }
