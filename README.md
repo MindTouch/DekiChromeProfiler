@@ -1,4 +1,4 @@
-MindTouch Chrome Extension
+MindTouch Developer Extension
 ==========================
 
 The MindTouch Developer Extension for Google Chrome provides advanced MindTouch authors with page load statistics. It is especially useful when debugging the performance of DekiScript code. At MindTouch we often use it during development as well as when diagnosing performance problems on a customer's site.
