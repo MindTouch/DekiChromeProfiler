@@ -97,7 +97,7 @@ app.controller('PhpStatsCtrl', ['$scope', function($scope, $routeParams) {
                 link: getApiLink(result.base, r.path)
             }
         });
-
+        
         // API stats columns
         _(result.stats.stats.requests.api).each(function(req, idx) {
             req.cols = _(req.stats).chain().words(/[;]/).groupBy(function(stat) {
@@ -138,9 +138,9 @@ app.controller('PhpStatsCtrl', ['$scope', function($scope, $routeParams) {
                     } else {
                         if(ratio) {
                             if(!miss && hit) {
-                                miss = hit / ratio - hit; 
+                                miss = hit / ratio - hit;
                             } else if(!hit && miss) {
-                                hit = (-ratio * miss) / (ratio - 1); 
+                                hit = (-ratio * miss) / (ratio - 1);
                             }
                         } else {
                             if(hit && miss) {
@@ -166,10 +166,10 @@ app.controller('PhpStatsCtrl', ['$scope', function($scope, $routeParams) {
                             resetText = 'reset: ' + reset;
                         }
                     }
-                    return { 
-                        display: str, 
-                        formattedRatio: _(ratio * 100).numberFormat(1) || '', 
-                        ratioClass: tdClass, 
+                    return {
+                        display: str,
+                        formattedRatio: _(ratio * 100).numberFormat(1) || '',
+                        ratioClass: tdClass,
                         resetClass: tdClassReset,
                         resetText: resetText
                     };
@@ -180,7 +180,7 @@ app.controller('PhpStatsCtrl', ['$scope', function($scope, $routeParams) {
 }]);
 
 app.controller('ApiStatsCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
-    $scope.data = { 
+    $scope.data = {
         pageTitle: 'Unknown page',
         baseHref: null,
         functionsData: {
@@ -208,9 +208,9 @@ app.controller('ApiStatsCtrl', ['$scope', '$routeParams', '$http', function($sco
     $scope.refresh = function(uri) {
         $scope.data.uri = uri;
         $scope.data.error = 'Loading ...';
-        proxyXHR({ 
+        proxyXHR({
             method: 'GET',
-            url: $routeParams.uri + '&dream.out.format=json', 
+            url: $routeParams.uri + '&dream.out.format=json',
             onComplete: function(status, data) {
                 $scope.$apply(function() {
                     if(status !== 200) {
@@ -232,13 +232,29 @@ app.controller('ApiStatsCtrl', ['$scope', '$routeParams', '$http', function($sco
                                 count: d['@count']
                             };
                         }).sortBy(function(x) { return -x.elapsed; }).value();
-                        $scope.data.pages = _(makeArray(data['rendered-content'].page)).chain().map(function(p) {
+                        var renderData = data['rendered-content'] || data['calls'];
+                        var pages = _(makeArray(renderData.page)).map(function(p) {
                             return {
-                                path: p['@path'],
+                                path: p['@path'] || p['@name'],
                                 elapsed: p['@elapsed'],
                                 functions: p['function']
                             };
-                        }).sortBy(function(x) { return -x.elapsed; }).value();
+                        });
+                        var templates = _(makeArray(renderData.template)).map(function(p) {
+                            return {
+                                path: p['@path'] || p['@name'],
+                                elapsed: p['@elapsed'],
+                                functions: p['function']
+                            };
+                        });
+                        var imports = _(makeArray(renderData.import)).map(function(p) {
+                            return {
+                                path: p['@path'] || p['@name'],
+                                elapsed: p['@elapsed'],
+                                functions: p['function']
+                            };
+                        });
+                        $scope.data.pages = _(pages).chain().union(templates).union(imports).sortBy(function(x) { return -x.elapsed; }).value();
                     }
                 });
             }
