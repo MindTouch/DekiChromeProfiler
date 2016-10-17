@@ -1,0 +1,15 @@
+{
+  "extends": "mindtouch",
+  "globals": {
+    "chrome": false,
+    "angular": false,
+    "_": false
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
+  }
+}
