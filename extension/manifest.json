@@ -7,13 +7,17 @@
   "author": "Yuri Gorokhov",
   "devtools_page": "devtools.html",
   "background": {
-  	"scripts": ["background.js"],
+  	"scripts": [ "background.js" ],
   	"persistent": false
   },
-  "permissions": [
-  	"http://*/",
-  	"https://*/"
+  "content_scripts": [
+    {
+      "matches": [ "<all_urls>" ],
+      "js": [ "eventListener.js" ],
+      "run_at": "document_start"
+    }
   ],
+  "permissions": [ "<all_urls>" ],
   "icons": {
     "16": "MindTouch_16.png",
     "48": "MindTouch_48.png",

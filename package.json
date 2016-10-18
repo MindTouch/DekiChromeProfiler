@@ -1,0 +1,13 @@
+{
+  "name": "MindTouch-Developer-Extension",
+  "description": "This extension provides performance information about a MindTouch site",
+  "devDependencies": {
+    "eslint": "3.7.1",
+    "eslint-config-mindtouch": "1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MindTouch/DekiChromeProfiler"
+  },
+  "author": "MindTouch"
+}
